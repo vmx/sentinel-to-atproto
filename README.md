@@ -45,8 +45,21 @@ Deploy it to Cloudflare:
      npm run deploy
 
 
+License
+-------
+
+This project is licensed under either of
+
+ - Apache License, Version 2.0, ([LICENSE-APACHE] or https://www.apache.org/licenses/LICENSE-2.0)
+ - MIT license ([LICENSE-MIT] or https://opensource.org/licenses/MIT)
+
+at your option.
+
+
 [Cloudflare Worker]: https://developers.cloudflare.com/workers/
 [STAC catalogue]: https://stacspec.org/
 [Copernicus Sentinel-2 L2A data]: https://sentinels.copernicus.eu/web/sentinel/user-guides/sentinel-2-msi/product-types/level-2a
 [ATProto]: https://atproto.com/
 [`.env` file]: https://www.dotenv.org/docs/security/env
+[LICENSE-APACHE]: ./LICENSE-APACHE
+[LICENSE-MIT]: ./LICENSE-MIT
