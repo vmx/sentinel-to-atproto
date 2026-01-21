@@ -1,10 +1,20 @@
 import { startSession, putRecords } from "./atproto"
 import { fetchAndExtract, type Record } from "./stac-extract"
 
+// The maximum number of items that can be written within a single
+// `applyWrites` call on a Bluesky PDS.
+const BLUESKY_MAX_BATCH_SIZE = 200
+
 /// Publish the records on ATProto.
 const publishRecords = async (env: Env, records: Record[]) => {
   const session = await startSession(env)
-  await putRecords(session, records)
+
+  // There is a maximum number of records that can be put within a single
+  // request, hence chunk the input if needed.
+  for (let ii = 0; ii < records.length; ii += BLUESKY_MAX_BATCH_SIZE) {
+    const chunk = records.slice(ii, ii + BLUESKY_MAX_BATCH_SIZE)
+    await putRecords(session, chunk)
+  }
 }
 
 const doit = async (env: Env) => {

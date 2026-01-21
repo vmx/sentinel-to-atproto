@@ -31,7 +31,7 @@ export const fetchAndExtract = async (): Promise<Record[]> => {
 
   const requestBody = {
     collections: ["sentinel-2-l2a"],
-    limit: 200,
+    limit: 250,
     sortby: [
       {
         field: "properties.created",
