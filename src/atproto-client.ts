@@ -7,18 +7,20 @@ export interface AtpSession {
   did: string
 }
 
-export interface AtpPutRecord {
+export interface AtpApplyWritesCreate {
   jwt: string
   repo: string
-  collection: string
-  rkey: string
-  record: unknown
+  writes: {
+    $type: 'com.atproto.repo.applywrites#create'
+    //$type: string,
+    collection: string
+    rkey: string
+    value: unknown
+  }[]
 }
 
-export interface AtpPutRecordResp {
-  uri: string
-  cid: string
-}
+// TODO vmx 2026-01-21: add proper definition.
+export interface AtpApplyWritesCreateResp {}
 
 const PDS = "https://bsky.social"
 
@@ -44,19 +46,15 @@ export async function atpCreateSession(
   return resp.json()
 }
 
-export async function atpPutRecord({
+export async function atpApplyWritesCreate({
   jwt,
   repo,
-  collection,
-  record,
-  rkey,
-}: AtpPutRecord): Promise<AtpPutRecordResp> {
-  const url = new URL("/xrpc/com.atproto.repo.putRecord", PDS)
+  writes,
+}: AtpApplyWritesCreate): Promise<AtpApplyWritesCreateResp> {
+  const url = new URL("/xrpc/com.atproto.repo.applyWrites", PDS)
   const body = {
     repo,
-    collection,
-    rkey,
-    record,
+    writes,
     validate: false,
   }
 

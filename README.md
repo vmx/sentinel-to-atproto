@@ -6,9 +6,7 @@ This is a [Cloudflare worker] that scrapes a [STAC catalogue] containing the [Co
 Initial setup
 -------------
 
-    npx wrangler d1 create state
-    npx wrangler d1 execute state --command="CREATE TABLE IF NOT EXISTS kv_store (key TEXT PRIMARY KEY, value TEXT);"
-    npx wrangler d1 execute state --remote --command="CREATE TABLE IF NOT EXISTS kv_store (key TEXT PRIMARY KEY, value TEXT);"
+    npx wrangler kv namespace create STATE
 
 
 ### Environment variables

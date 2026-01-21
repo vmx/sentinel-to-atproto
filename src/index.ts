@@ -1,32 +1,17 @@
-import { startSession, putRecord } from "./atproto"
+import { startSession, putRecords } from "./atproto"
 import { fetchAndExtract, type Record } from "./stac-extract"
-
-// The maximum number of metadata records we request from the STAC catalogue.
-const MAX_REQUESTED = 100
-// The maximum number of recrods we post on ATProto within one invocation of
-// the worker.
-const MAX_POSTED = 45
 
 /// Publish the records on ATProto.
 const publishRecords = async (env: Env, records: Record[]) => {
   const session = await startSession(env)
-  for (const record of records) {
-    // Doing it with an await here, so that there aren't too many simultaneous
-    // requests.
-    await putRecord(session, record)
-  }
+  await putRecords(session, records)
 }
 
 const doit = async (env: Env) => {
-  const extracted = await fetchAndExtract(MAX_REQUESTED)
+  const extracted = await fetchAndExtract()
 
-  const { results } = await env.STATE.prepare(
-    "SELECT value FROM kv_store WHERE key = ?",
-  )
-    .bind("last-created")
-    .all()
-  const lastCreated = results[0]?.value || "2000-01-01T00:00:00Z"
-
+  const lastCreated =
+    (await env.STATE.get("last-created")) || "2000-01-01T00:00:00Z"
   console.log(`Last created date is: ${lastCreated}`)
 
   // Only keep entries that are newer than last time. The last entry is one
@@ -47,38 +32,22 @@ const doit = async (env: Env) => {
       `There might be a gap between ${lastCreated} and ${oldest.created}`,
     )
     // Persist information about gaps in the KV store.
-    await env.STATE.prepare(
-      "INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)",
-    )
-      .bind(`gap:${lastCreated}`, oldest.created)
-      .run()
+    await env.STATE.put(`gap:${lastCreated}`, oldest.created)
     // As the oldest item didn't match the previous run, put it back into the
     // list of new entries.
     filtered.push(oldest)
   }
 
   if (filtered.length > 0) {
-    // On the free tier it's only allowed to make at most 50 (sub-)requests
-    // per worker invocation. Hence limit it to 45 puts to be on the safe
-    // side. On the next run, we will re-request the ones we've potentially
-    // removed.
-    const reduced = filtered.slice(-45)
+    const newestCreated = filtered[0].created
 
-    const newestCreated = reduced[0].created
+    await publishRecords(env, filtered)
 
-    await publishRecords(env, reduced)
-
-    await env.STATE.prepare(
-      "INSERT OR REPLACE INTO kv_store (key, value) VALUES (?, ?)",
-    )
-      .bind("last-created", newestCreated)
-      .run()
+    await env.STATE.put("last-created", newestCreated)
     console.log(`Newest created date is: ${newestCreated}`)
-
-    return reduced.length
-  } else {
-    return 0
   }
+
+  return filtered.length
 }
 
 export default {

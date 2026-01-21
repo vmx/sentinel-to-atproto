@@ -4,16 +4,15 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-12-12",
   //"account_id": "USE `CLOUDFLARE_ACCOUNT_ID` environment variable",
-  "d1_databases": [
+  "kv_namespaces": [
     {
       "binding": "STATE",
-      "database_name": "state",
-      "database_id": "c6643d3f-4928-4b9f-9b0d-f5e248af0687"
+      "id": "96ae0926c84a48edacf8af258a1cd997"
     }
   ],
-  // Run it every minute
+  // Run it every 5 minutes
   "triggers": {
-    "crons": ["*/1 * * * *"]
+    "crons": ["*/5 * * * *"]
   },
   "observability": {
     "logs": {

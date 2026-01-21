@@ -26,12 +26,12 @@ export interface Record {
   created: string
 }
 
-export const fetchAndExtract = async (limit: number): Promise<Record[]> => {
+export const fetchAndExtract = async (): Promise<Record[]> => {
   const url = "https://earth-search.aws.element84.com/v1/search"
 
   const requestBody = {
     collections: ["sentinel-2-l2a"],
-    limit,
+    limit: 200,
     sortby: [
       {
         field: "properties.created",
