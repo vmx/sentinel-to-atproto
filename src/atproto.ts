@@ -15,7 +15,7 @@ export const putRecords = async (session: AtpSession, records: Record[]) => {
   const writes = records.map((record) => {
     const { metadata, preview, created } = record
     return {
-      $type: 'com.atproto.repo.applywrites#create' as const,
+      $type: 'com.atproto.repo.applyWrites#create' as const,
       collection: "cx.vmx.dev.tmp001.matadata",
       rkey: TID.now(),
       value: {
