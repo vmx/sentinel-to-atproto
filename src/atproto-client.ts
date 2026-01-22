@@ -69,7 +69,7 @@ export async function atpApplyWritesCreate({
 
   if (!resp.ok) {
     const err = await resp.text().catch(() => "(unknown error)")
-    throw new Error(`putRecord failed: ${resp.status} ${err}`)
+    throw new Error(`applytWrites failed: ${resp.status} ${err}`)
   }
 
   return resp.json()
