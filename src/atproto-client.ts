@@ -24,6 +24,16 @@ export interface AtpApplyWritesCreateResp {}
 
 const PDS = "https://bsky.social"
 
+const logRateLimits = (resp: Response) => {
+  const rateLimits: { [key: string]: string } = {}
+  for (const [key, value] of resp.headers.entries()) {
+    if (key.startsWith("ratelimit-")) {
+      rateLimits[key.replace(/^ratelimit-/, "")] = value
+    }
+  }
+  console.log(`Rate limits of ${resp.url}:`, JSON.stringify(rateLimits))
+}
+
 export async function atpCreateSession(
   identifier: string,
   password: string,
@@ -37,6 +47,8 @@ export async function atpCreateSession(
       password,
     }),
   })
+
+  logRateLimits(resp)
 
   if (!resp.ok) {
     const err = await resp.text().catch(() => "(unknown error)")
@@ -66,6 +78,8 @@ export async function atpApplyWritesCreate({
     },
     body: JSON.stringify(body),
   })
+
+  logRateLimits(resp)
 
   if (!resp.ok) {
     const err = await resp.text().catch(() => "(unknown error)")
