@@ -12,7 +12,6 @@ export interface AtpApplyWritesCreate {
   repo: string
   writes: {
     $type: "com.atproto.repo.applywrites#create"
-    //$type: string,
     collection: string
     rkey: string
     value: unknown
