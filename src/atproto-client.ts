@@ -11,7 +11,7 @@ export interface AtpApplyWritesCreate {
   jwt: string
   repo: string
   writes: {
-    $type: "com.atproto.repo.applywrites#create"
+    $type: "com.atproto.repo.applyWrites#create"
     collection: string
     rkey: string
     value: unknown
