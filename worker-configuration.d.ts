@@ -9,8 +9,8 @@ declare namespace Cloudflare {
 		STATE: KVNamespace;
 		CLOUDFLARE_ACCOUNT_ID: string;
 		CLOUDFLARE_API_TOKEN: string;
-		BLUEKSY_USERNAME: string;
-		BLUEKSY_PASSWORD: string;
+		BLUESKY_USERNAME: string;
+		BLUESKY_PASSWORD: string;
 	}
 }
 interface Env extends Cloudflare.Env {}
