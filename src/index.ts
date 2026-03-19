@@ -20,15 +20,15 @@ const publishRecords = async (env: Env, records: Record[]) => {
 const doit = async (env: Env) => {
   const extracted = await fetchAndExtract()
 
-  const lastCreated =
-    (await env.STATE.get("last-created")) || "2000-01-01T00:00:00Z"
-  console.log(`Last created date is: ${lastCreated}`)
+  const lastPublishedAt =
+    (await env.STATE.get("last-publishedAt")) || "2000-01-01T00:00:00Z"
+  console.log(`Last publishedAt date is: ${lastPublishedAt}`)
 
   // Only keep entries that are newer than last time. The last entry is one
   // that was already inserted. It's kept in order to check that there are no
   // gaps between runs.
   const filtered = extracted.filter((item) => {
-    return item.created >= lastCreated
+    return item.publishedAt >= lastPublishedAt
   })
 
   console.log(`Filtered new entries (${filtered.length}):`, filtered)
@@ -37,24 +37,24 @@ const doit = async (env: Env) => {
   // The filter also checks for equality, this means that there's always at
   // least one item in the list.
   const oldest = filtered.pop()!
-  if (oldest.created != lastCreated) {
+  if (oldest.publishedAt != lastPublishedAt) {
     console.warn(
-      `There might be a gap between ${lastCreated} and ${oldest.created}`,
+      `There might be a gap between ${lastPublishedAt} and ${oldest.publishedAt}`,
     )
     // Persist information about gaps in the KV store.
-    await env.STATE.put(`gap:${lastCreated}`, oldest.created)
+    await env.STATE.put(`gap:${lastPublishedAt}`, oldest.publishedAt)
     // As the oldest item didn't match the previous run, put it back into the
     // list of new entries.
     filtered.push(oldest)
   }
 
   if (filtered.length > 0) {
-    const newestCreated = filtered[0].created
+    const newestPublishedAt = filtered[0].publishedAt
 
     await publishRecords(env, filtered)
 
-    await env.STATE.put("last-created", newestCreated)
-    console.log(`Newest created date is: ${newestCreated}`)
+    await env.STATE.put("last-published-at", newestPublishedAt)
+    console.log(`Newest publishedAt date is: ${newestPublishedAt}`)
   }
 
   return filtered.length

@@ -21,9 +21,9 @@ interface STACSearchResponse {
 }
 
 export interface Record {
-  metadata: string
   preview: string
-  created: string
+  publishedAt: string
+  resource: string
 }
 
 export const fetchAndExtract = async (): Promise<Record[]> => {
@@ -62,13 +62,13 @@ export const fetchAndExtract = async (): Promise<Record[]> => {
     const data: STACSearchResponse = await response.json()
 
     const extracted: Record[] = data.features.map((feature) => {
-      const metadata = feature.links.find((l) => l.rel === "self")!.href.trim()
+      const resource = feature.links.find((l) => l.rel === "self")!.href.trim()
       const preview = feature.links
         .find((l) => l.rel === "thumbnail")!
         .href.trim()
-      const created = feature.properties.created
+      const publishedAt = feature.properties.created
 
-      return { metadata, preview, created }
+      return { publishedAt, preview, resource }
     })
 
     return extracted

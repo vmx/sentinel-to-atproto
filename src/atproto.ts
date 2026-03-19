@@ -13,18 +13,18 @@ export const startSession = async (env: Env): Promise<AtpSession> => {
 
 export const putRecords = async (session: AtpSession, records: Record[]) => {
   const writes = records.map((record) => {
-    const { metadata, preview, created } = record
+    const { preview, publishedAt, resource } = record
     return {
       $type: "com.atproto.repo.applyWrites#create" as const,
       collection: "cx.vmx.matadisco",
       rkey: TID.now(),
       value: {
-        metadata,
+        resource,
         preview: {
           url: preview,
           mimeType: "image/jpeg",
         },
-        created,
+        publishedAt,
       },
     }
   })
