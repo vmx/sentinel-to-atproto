@@ -8,7 +8,7 @@ import {
 import type { Record } from "./stac-extract"
 
 export const startSession = async (env: Env): Promise<AtpSession> => {
-  return atpCreateSession(env.BLUEKSY_USERNAME, env.BLUEKSY_PASSWORD)
+  return atpCreateSession(env.BLUESKY_USERNAME, env.BLUESKY_PASSWORD)
 }
 
 export const putRecords = async (session: AtpSession, records: Record[]) => {

@@ -15,8 +15,8 @@ You can put the environment variables into a [`.env` file].
 
     CLOUDFLARE_ACCOUNT_ID=8a53d9807182ed15692b1a3f4c12af96
     CLOUDFLARE_API_TOKEN="mFmOTYwZjBjMTQ2OGUxY_TQ0YTk2NWYxYzljYTVj"
-    BLUEKSY_USERNAME=atproto-account@example.org
-    BLUEKSY_PASSWORD=Averysecurepassword
+    BLUESKY_USERNAME=atproto-account@example.org
+    BLUESKY_PASSWORD=Averysecurepassword
 
 
 Development
