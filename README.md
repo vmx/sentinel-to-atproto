@@ -1,7 +1,10 @@
 Sentinel to ATproto
 ===================
 
-This is a [Cloudflare worker] that scrapes a [STAC catalogue] containing the [Copernicus Sentinel-2 L2A data]. It then publishes metadata records on [ATProto].
+This is a [Cloudflare worker] that scrapes a [STAC catalogue] containing the [Copernicus Sentinel-2 L2A data]. It then publishes [Matadisco] records on [ATProto].
+
+This repo also serves as a template that can easily modified to publish your own Matadisco records via a Cloudflare worker.
+
 
 Initial setup
 -------------
@@ -58,6 +61,7 @@ at your option.
 [STAC catalogue]: https://stacspec.org/
 [Copernicus Sentinel-2 L2A data]: https://sentinels.copernicus.eu/web/sentinel/user-guides/sentinel-2-msi/product-types/level-2a
 [ATProto]: https://atproto.com/
+[Matadisco]: https://matadisco.org/
 [`.env` file]: https://www.dotenv.org/docs/security/env
 [LICENSE-APACHE]: ./LICENSE-APACHE
 [LICENSE-MIT]: ./LICENSE-MIT
