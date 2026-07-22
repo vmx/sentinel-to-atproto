@@ -21,7 +21,7 @@ const doit = async (env: Env) => {
   const extracted = await fetchAndExtract()
 
   const lastPublishedAt =
-    (await env.STATE.get("last-publishedAt")) || "2000-01-01T00:00:00Z"
+    (await env.STATE.get("last-published-at")) || "2000-01-01T00:00:00Z"
   console.log(`Last publishedAt date is: ${lastPublishedAt}`)
 
   // Only keep entries that are newer than last time. The last entry is one
