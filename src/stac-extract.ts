@@ -4,14 +4,25 @@ interface Link {
   [key: string]: unknown // allow extra STAC link fields
 }
 
+interface Geometry {
+  type: string
+  coordinates: unknown
+}
+
 interface Feature {
   id: string
+  collection: string
+  bbox: number[]
+  geometry: Geometry
   properties: {
     created: string // ISO 8601 timestamp (e.g., '2025-12-10T14:23:00Z')
+    datetime: string // when the data was acquired, not when it was published
+    platform: string
+    "eo:cloud_cover"?: number
     [key: string]: unknown
   }
   links: Link[]
-  // geometry, bbox, assets omitted per exclude list
+  // assets omitted per exclude list
 }
 
 interface STACSearchResponse {
@@ -20,10 +31,33 @@ interface STACSearchResponse {
   [key: string]: unknown
 }
 
+// The ATProto data model has no floating point numbers, hence any value
+// containing them is stored as a JSON string. Consumers get the original
+// values back by running it through `JSON.parse()`.
+type JSONString = string
+
+// Core STAC Item fields worth having direct access to, without resolving the
+// `resource` URI first. Corresponds to the `stac` tag.
+export interface Stac {
+  id: string
+  collection: string
+  datetime: string
+  bbox: JSONString
+  geometry: JSONString
+  platform: string
+}
+
+// Fields of the STAC Electro-Optical extension. Corresponds to the `eo` tag.
+export interface Eo {
+  cloudCover: JSONString
+}
+
 export interface Record {
   preview: string
   publishedAt: string
   resource: string
+  stac: Stac
+  eo?: Eo
 }
 
 export const fetchAndExtract = async (): Promise<Record[]> => {
@@ -39,8 +73,18 @@ export const fetchAndExtract = async (): Promise<Record[]> => {
       },
     ],
     fields: {
-      include: ["id", "properties.created", "links"],
-      exclude: ["geometry", "bbox", "assets"],
+      include: [
+        "id",
+        "collection",
+        "bbox",
+        "geometry",
+        "properties.created",
+        "properties.datetime",
+        "properties.platform",
+        "properties.eo:cloud_cover",
+        "links",
+      ],
+      exclude: ["assets"],
     },
     //} satisfies RequestInit['body'] & Record<string, unknown>; // type assertion helper
   }
@@ -68,7 +112,23 @@ export const fetchAndExtract = async (): Promise<Record[]> => {
         .href.trim()
       const publishedAt = feature.properties.created
 
-      return { publishedAt, preview, resource }
+      const stac: Stac = {
+        id: feature.id,
+        collection: feature.collection,
+        datetime: feature.properties.datetime,
+        bbox: JSON.stringify(feature.bbox),
+        geometry: JSON.stringify(feature.geometry),
+        platform: feature.properties.platform,
+      }
+
+      const record: Record = { publishedAt, preview, resource, stac }
+
+      const cloudCover = feature.properties["eo:cloud_cover"]
+      if (cloudCover !== undefined) {
+        record.eo = { cloudCover: JSON.stringify(cloudCover) }
+      }
+
+      return record
     })
 
     return extracted
